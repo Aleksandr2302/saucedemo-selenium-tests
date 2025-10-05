@@ -1,0 +1,20 @@
+{
+  "name": "saucedemo.com",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "mocha ./test/**/*.js",
+    "format": "prettier --write \"test/**/*.js\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^6.2.0",
+    "mocha": "^11.7.4",
+    "prettier": "^3.6.2",
+    "selenium-webdriver": "^4.36.0"
+  }
+}
