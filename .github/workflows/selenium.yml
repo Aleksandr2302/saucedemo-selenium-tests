@@ -7,29 +7,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Забираем код
+      # 1. Checkout code
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Настраиваем Node.js
+      # 2. Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      # 3. Устанавливаем npm-зависимости
-      - name: Install dependencies
-        run: npm install
+      # 3. Install npm dependencies
+      - name: Install npm dependencies
+        working-directory: ./saucedemo.com
+        run: npm ci   # ci ensures exact versions including devDependencies
 
-      # 4. Устанавливаем системные пакеты для headless Chrome
+      # 4. Install system dependencies for headless Chrome
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget unzip xvfb libxi6 libnss3 libxss1 fonts-liberation google-chrome-stable
+          sudo apt-get install -y wget unzip xvfb libxi6 libnss3 libxss1 fonts-liberation
 
-      # 5. Запуск Selenium тестов в headless Chrome
-      - name: Run Selenium tests
+      # 5. Install Google Chrome
+      - name: Install Google Chrome
         run: |
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
+      # 6. Run Selenium tests in headless Chrome
+      - name: Run Selenium tests
+        working-directory: ./saucedemo.com
+        run: |
+          # Start virtual display
           Xvfb :99 -screen 0 1280x1024x24 &
           export DISPLAY=:99
+
+          # Run Mocha tests via npx
           npx mocha ./test/**/*.js
