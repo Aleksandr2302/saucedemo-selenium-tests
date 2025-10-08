@@ -12,7 +12,7 @@ describe("saucedemo Login Page", function () {
   });
 
   beforeEach(async () => {
-    // ждём пока поля появятся и находим заново (чтобы не было stale)
+    // wait 5 sec and find an element
     usernameField = await driver.wait(
       until.elementLocated(By.id("user-name")),
       5000,
@@ -38,7 +38,7 @@ describe("saucedemo Login Page", function () {
   // Test #1
   it("Test#1 - title verification on the Login Page", async () => {
     const title = await driver.getTitle();
-    expect(title).to.equal("Swag Labs"); // проверяем, что тайтл = Swag Labs
+    expect(title).to.equal("Swag Labs");
   });
 
   // Test #2
@@ -63,11 +63,10 @@ describe("saucedemo Login Page", function () {
 
   // Test #5
   it("Test#5 - login with invalid credentials on the Login Page", async () => {
-    // вводим неправильные данные
+    // use the incorrect values
     await usernameField.sendKeys("wrong_user");
     await passwordField.sendKeys("wrong_pass");
 
-    // кликаем Login
     await loginButton.click();
 
     const errorElement = await driver.findElement(
@@ -85,20 +84,17 @@ describe("saucedemo Login Page", function () {
 
   // Test #6
   it("Test#6 - login with valid credentials", async () => {
-    // вводим правильные данные
+    // use the correct values
     await usernameField.sendKeys("standard_user");
     await passwordField.sendKeys("secret_sauce");
 
-    // кликаем Login
     await loginButton.click();
 
-    // ждём пока появится заголовок "Products"
     const productsTitle = await driver.wait(
       until.elementLocated(By.css('span[data-test="title"]')),
       10000,
     );
 
-    // теперь получаем текст
     const text = await productsTitle.getText();
 
     expect(text).to.include("Products");

@@ -30,7 +30,7 @@ describe("saucedemo Login Page", function () {
 
   // Test #7
   it("Test#7 - list of products greater than zero on the product Page", async () => {
-    // ждём пока поля появятся и находим заново (чтобы не было stale)
+    // Wait 5 sec and find element
     const usernameField = await driver.wait(
       until.elementLocated(By.id("user-name")),
       5000,
@@ -44,11 +44,10 @@ describe("saucedemo Login Page", function () {
       5000,
     );
 
-    // вводим правильные данные
+    // Use the correct values
     await usernameField.sendKeys("standard_user");
     await passwordField.sendKeys("secret_sauce");
 
-    // кликаем Login
     await loginButton.click();
 
     await driver.wait(until.urlContains("inventory.html"), 10000);
@@ -67,22 +66,22 @@ describe("saucedemo Login Page", function () {
 
     expect(products.length).to.be.greaterThan(0);
 
-    // выбираем случайный продукт
+    // Select the random product from the product list 
     const randomIndex = Math.floor(Math.random() * products.length);
     const product = products[randomIndex];
 
-    // проверка имени случайного продукта
+    // Check a random product name
     const nameEl = await product.findElement(By.css("div.inventory_item_name"));
     const name = await nameEl.getText();
 
     expect(name).to.not.be.empty;
 
-    // проверка описания случайного продукта
+    // Check a random product description
     const descEl = await product.findElement(By.css("div.inventory_item_desc"));
     const desc = await descEl.getText();
     expect(desc).to.not.be.empty;
 
-    // проверка цены случайного продукта
+    // Check a random product price
     const priceEl = await product.findElement(
       By.css("div.inventory_item_price"),
     );
@@ -90,7 +89,7 @@ describe("saucedemo Login Page", function () {
     console.log("Price:", price);
     expect(price).to.not.be.empty;
 
-    // проверка кнопки add to cart случайного продукта
+    // Check the button "Add to cart" for random product name
     const btnEl = await product.findElement(By.css("button.btn"));
     const btnText = await btnEl.getText();
     expect(btnText).to.equal("Add to cart");
@@ -98,25 +97,24 @@ describe("saucedemo Login Page", function () {
 
   // Test #9
   it("Test#9 - Add random product to the basket and verify count on the product Page", async () => {
-    // выбираем случайный продукт
+    // Select the random product name
     const products = await driver.findElements(
       By.css('div.inventory_item[data-test="inventory-item"]'),
     );
     const randomIndex = Math.floor(Math.random() * products.length);
     const product = products[randomIndex];
 
-    // получаем название продукта для логов
+    // Get the product name 
     const productName = await product
       .findElement(By.css(".inventory_item_name"))
       .getText();
 
-    // находим кнопку внутри всего продукта
+    // Find the button for random product
     const btnEl = await product.findElement(By.css("button.btn_inventory"));
 
-    // кликаем
     await btnEl.click();
 
-    // ждём, пока кнопка станет "Remove" (с корректным элементом)
+    // Wait 5 sec when the button will be "Remove"
     await driver.wait(
       async () => {
         const text = await product
@@ -128,13 +126,13 @@ describe("saucedemo Login Page", function () {
       "Button text did not change to Remove",
     );
 
-    // проверяем текст
+    // Check the "Remove" button text
     const btnTextAfterClick = await product
       .findElement(By.css("button.btn_inventory"))
       .getText();
     expect(btnTextAfterClick).to.equal("Remove");
 
-    // проверяем количество товаров в корзине
+    // Check the count of product in basket
     const bucket = await driver.findElement(By.css("a.shopping_cart_link"));
     const bucketCountText = await bucket.getText();
 
@@ -144,7 +142,7 @@ describe("saucedemo Login Page", function () {
 
   // Test #10
   it("Test#10 - Remove the product from the bucket", async () => {
-    // выбираем продукт у которого remove
+    // Select the product with Remove" button 
     const removeBtn = await driver.findElement(
       By.css("button.btn.btn_secondary.btn_small.btn_inventory"),
     );
@@ -152,10 +150,9 @@ describe("saucedemo Login Page", function () {
 
     const bucket = await driver.findElement(By.css("a.shopping_cart_link"));
 
-    // ищем span внутри корзины
+    // Find a span element 
     const spans = await bucket.findElements(By.css("span"));
 
-    // проверяем, что span нет
     expect(spans.length).to.equal(0);
   });
 
@@ -171,7 +168,7 @@ describe("saucedemo Login Page", function () {
       productNames.push(name);
     }
 
-    // Сортируем в обратном порядке
+    // Sort the name by Z-A
     const sortedNames = [...productNames].sort().reverse(); // Z → A
 
     const sortDropdown = await driver.findElement(
@@ -179,7 +176,7 @@ describe("saucedemo Login Page", function () {
     );
     await sortDropdown.findElement(By.css('option[value="za"]')).click();
 
-    // Получаем продукты после сортировки
+    // Get the product after sorting
     const sortedProducts = await driver.findElements(
       By.css("div.inventory_item_name"),
     );
@@ -202,7 +199,7 @@ describe("saucedemo Login Page", function () {
       productNames.push(name);
     }
 
-    // Сортируем в обратном порядке
+    // Sort name by A-Z
     const sortedNames = [...productNames].sort(); // A → Z
 
     const sortDropdown = await driver.findElement(
@@ -210,7 +207,7 @@ describe("saucedemo Login Page", function () {
     );
     await sortDropdown.findElement(By.css('option[value="az"]')).click();
 
-    // Получаем продукты после сортировки
+    // Get the product after sorting
     const sortedProducts = await driver.findElements(
       By.css("div.inventory_item_name"),
     );
@@ -234,7 +231,7 @@ describe("saucedemo Login Page", function () {
       productPrices.push(price);
     }
 
-    // сортируем по возрастанию (low → high)
+    // Sort the price by (low → high)
     const sortedPrices = [...productPrices].sort((a, b) => a - b);
 
     const sortDropdown = await driver.findElement(
@@ -242,7 +239,7 @@ describe("saucedemo Login Page", function () {
     );
     await sortDropdown.findElement(By.css('option[value="lohi"]')).click();
 
-    // Получаем цены после сортировки
+    // Get the price after sorting
     const sortedProducts = await driver.findElements(
       By.css("div.inventory_item_price"),
     );
@@ -268,7 +265,7 @@ describe("saucedemo Login Page", function () {
       productPrices.push(price);
     }
 
-    // сортируем по возрастанию (high → low)
+    // Sort the price (high → low)
     const sortedPricesDesc = [...productPrices].sort((a, b) => b - a);
 
     const sortDropdown = await driver.findElement(
@@ -276,7 +273,7 @@ describe("saucedemo Login Page", function () {
     );
     await sortDropdown.findElement(By.css('option[value="hilo"]')).click();
 
-    // Получаем цены после сортировки
+    // Get the price after sorting
     const sortedProducts = await driver.findElements(
       By.css("div.inventory_item_price"),
     );
@@ -292,26 +289,26 @@ describe("saucedemo Login Page", function () {
 
   // Test #15
   it("Test#15 - the whole basket verification with one product ", async () => {
-    // выбираем случайный продукт
+    // Select the random product
     const products = await driver.findElements(
       By.css('div.inventory_item[data-test="inventory-item"]'),
     );
     const randomIndex = Math.floor(Math.random() * products.length);
     const product = products[randomIndex];
 
-    // выбираем имя случайного продукта
+    // Get the name of random product
     const productName = await product.findElement(
       By.css("div.inventory_item_name"),
     );
     const productNameText = await productName.getText();
 
-    // выбираем цену случайного продукта
+    // Get the price of random product
     const productPrice = await product.findElement(
       By.css("div.inventory_item_price"),
     );
     const productPriceText = await productPrice.getText();
 
-    // выбираем описание случайного продукта
+    // Get the description of random product
     const productDesc = await product.findElement(
       By.css("div.inventory_item_desc"),
     );
@@ -325,43 +322,43 @@ describe("saucedemo Login Page", function () {
     expect(spans.length).to.equal(1);
 
     bucketEl.click();
-    // ждём, пока появится div.cart_list
+    // Wait 5 sec 
     const cartList = await driver.wait(
       until.elementLocated(By.css("div.cart_list")),
       5000, // таймаут в мс
     );
 
-    // получаем имя продукта в корзине
+    // Get the product name in basket
     const productNameEl = await cartList.findElement(
       By.css("div.inventory_item_name"),
     );
     const productNameInBusket = await productNameEl.getText();
 
-    // получаем описание продукта в корзине
+    // Get the product description in basket
     const productDescEl = await cartList.findElement(
       By.css("div.inventory_item_desc"),
     );
     const productDescInBusket = await productDescEl.getText();
 
-    // получаем цену продукта в корзине
+    // Get the product price in basket
     const productPriceEl = await cartList.findElement(
       By.css("div.inventory_item_price"),
     );
     const productPriceInBusket = await productPriceEl.getText();
 
-    // получаем кнопку продолжить
+    // Get the button "Continue"
     const continueBtnEl = await driver.findElement(
       By.css("button.btn.btn_secondary.back.btn_medium"),
     );
     const continueBtn = await continueBtnEl.getText();
 
-    // получаем кнопку завершить
+    // Get the "Finish" button
     const checkoutBtnEl = await driver.findElement(
       By.css("button.btn.btn_action.btn_medium.checkout_button"),
     );
     const checkoutBtn = await checkoutBtnEl.getText();
 
-    // получаем количество товаров
+    // Get the count of product
     const cartquantityEl = await driver.findElement(
       By.css("div.cart_quantity"),
     );

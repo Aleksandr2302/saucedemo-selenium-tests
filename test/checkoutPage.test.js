@@ -30,7 +30,7 @@ describe("saucedemo Login Page", function () {
 
   // Test 16
   it("Test#16 -Prerequisites:  login with valid credentials, add random product, navigate to checkout page", async () => {
-    // ждём пока поля появятся и находим заново (чтобы не было stale)
+    // Wait 5 sec and find element
     const usernameField = await driver.wait(
       until.elementLocated(By.id("user-name")),
       5000,
@@ -44,43 +44,36 @@ describe("saucedemo Login Page", function () {
       5000,
     );
 
-    // вводим правильные данные
-
+    // Use the correct values
     await usernameField.sendKeys("standard_user");
     await passwordField.sendKeys("secret_sauce");
 
-    // проверим, что реально лежит в полях
-    const userValue = await usernameField.getAttribute("value");
-    const passValue = await passwordField.getAttribute("value");
-
-    // кликаем Login
     await loginButton.click();
 
-    // ждём пока появится заголовок "Products"
+    // Wait 10 sec till the title "Products" will be displayed
     const productsTitle = await driver.wait(
       until.elementLocated(By.css('span[data-test="title"]')),
       10000,
     );
 
-    // теперь получаем текст
+    // Get a title text
     const text = await productsTitle.getText();
 
     expect(text).to.include("Products");
 
-    // выбираем случайный продукт
+    // Select a random product
     const products = await driver.findElements(
       By.css('div.inventory_item[data-test="inventory-item"]'),
     );
     const randomIndex = Math.floor(Math.random() * products.length);
     const product = products[randomIndex];
 
-    // находим кнопку внутри всего продукта
+    // Find the "Add to cart" button
     const btnEl = await product.findElement(By.css("button.btn_inventory"));
 
-    // кликаем
     await btnEl.click();
 
-    // ждём, пока кнопка станет "Remove" (с корректным элементом)
+    // Wait 5 sec till the button will be "Remove"
     await driver.wait(
       async () => {
         const text = await product
@@ -92,13 +85,13 @@ describe("saucedemo Login Page", function () {
       "Button text did not change to Remove",
     );
 
-    // проверяем текст
+    // Check the button text
     const btnTextAfterClick = await product
       .findElement(By.css("button.btn_inventory"))
       .getText();
     expect(btnTextAfterClick).to.equal("Remove");
 
-    // проверяем количество товаров в корзине
+    // Check the count in basket
     const bucket = await driver.findElement(By.css("a.shopping_cart_link"));
     const bucketCountText = await bucket.getText();
 
@@ -154,25 +147,25 @@ describe("saucedemo Login Page", function () {
       await zipCodeNameField.getAttribute("value");
     expect(zipCodeNameFieldPlaceholder).to.equal("15216");
 
-    // нажимаем кнопку Continue, чтобы вызвать ошибку
+    // Click the "Continue" button to get an error
     const continueButton = await driver.findElement(By.id("continue"));
     await continueButton.click();
 
-    // ждём появления элемента ошибки
+    // Wait 5 sec till the error message will appear
     const errorEl = await driver.wait(
       until.elementLocated(By.css('[data-test="error"]')),
-      5000, // максимум 5 секунд
+      5000,
       "Error message not found",
     );
     const errorText = await errorEl.getText();
     expect(errorText).to.equal("Error: First Name is required");
 
-    // Повторно находим элементы (DOM перерендерился)
+    // Find the elements  (rerender DOM)
     const firstNameFieldAgain = await driver.findElement(By.id("first-name"));
     const lastNameFieldAgain = await driver.findElement(By.id("last-name"));
     const zipCodeFieldAgain = await driver.findElement(By.id("postal-code"));
 
-    // Используем sendKeys для очистки (работает в React)
+    // Clean all fields
     for (const field of [
       firstNameFieldAgain,
       lastNameFieldAgain,
@@ -201,7 +194,7 @@ describe("saucedemo Login Page", function () {
       await zipCodeNameField.getAttribute("value");
     expect(zipCodeNameFieldPlaceholder).to.equal("15216");
 
-    // нажимаем кнопку Continue, чтобы вызвать ошибку
+    // Click Continue button to get an error
     const continueButton = await driver.findElement(By.id("continue"));
     await continueButton.click();
 
@@ -209,12 +202,12 @@ describe("saucedemo Login Page", function () {
     const errorText = await errorEl.getText();
     expect(errorText).to.equal("Error: Last Name is required");
 
-    // Повторно находим элементы (DOM перерендерился)
+    // Find the elements  (rerender DOM)
     const firstNameFieldAgain = await driver.findElement(By.id("first-name"));
     const lastNameFieldAgain = await driver.findElement(By.id("last-name"));
     const zipCodeFieldAgain = await driver.findElement(By.id("postal-code"));
 
-    // Используем sendKeys для очистки (работает в React)
+    // Clean all fields
     for (const field of [
       firstNameFieldAgain,
       lastNameFieldAgain,
@@ -243,7 +236,7 @@ describe("saucedemo Login Page", function () {
       await zipCodeNameField.getAttribute("value");
     expect(zipCodeNameFieldPlaceholder).to.equal("");
 
-    // нажимаем кнопку Continue, чтобы вызвать ошибку
+    // Click the "Continue" button to get an error
     const continueButton = await driver.findElement(By.id("continue"));
     await continueButton.click();
 
@@ -251,12 +244,12 @@ describe("saucedemo Login Page", function () {
     const errorText = await errorEl.getText();
     expect(errorText).to.equal("Error: Postal Code is required");
 
-    // Повторно находим элементы (DOM перерендерился)
+    // Find the elements  (rerender DOM)
     const firstNameFieldAgain = await driver.findElement(By.id("first-name"));
     const lastNameFieldAgain = await driver.findElement(By.id("last-name"));
     const zipCodeFieldAgain = await driver.findElement(By.id("postal-code"));
 
-    // Используем sendKeys для очистки (работает в React)
+    // Clean all fields
     for (const field of [
       firstNameFieldAgain,
       lastNameFieldAgain,
@@ -299,83 +292,83 @@ describe("saucedemo Login Page", function () {
 
   // Test #23
   it("Test#23 - verification Overview on the Checkout Page", async () => {
-    // QTY text
+    // Get the QTY text
     const cartQL = await driver.findElement(
       By.css('[data-test="cart-quantity-label"]'),
     );
     const textQL = await cartQL.getText();
     expect(textQL).to.equal("QTY");
 
-    // Description title text
+    // Get description title text
     const descTitle = await driver.findElement(
       By.css('[data-test="cart-desc-label"]'),
     );
     const textDescTitle = await descTitle.getText();
     expect(textDescTitle).to.equal("Description");
 
-    // Description text
+    // Get description text
     const productDesc = await driver.findElement(
       By.css('[data-test="inventory-item-desc"]'),
     );
     const productDescText = await productDesc.getText();
     expect(productDescText).to.not.equal("");
 
-    // Price text
+    // Get price text
     const productPrice = await driver.findElement(
       By.css('[data-test="inventory-item-price"]'),
     );
     const productPriceText = await productPrice.getText();
-    // проверка, что текст не пустой и начинается с $
+    // Check the price (it starts from $ + some amount)
     expect(productPriceText).to.match(/^\$\d+(\.\d{2})?$/);
 
-    // Payment information label text
+    // Check the payment information label text
     const paymentInfoTitle = await driver.findElement(
       By.css('[data-test="payment-info-label"]'),
     );
     const paymentInfoTitleText = await paymentInfoTitle.getText();
     expect(paymentInfoTitleText).to.equal("Payment Information:");
 
-    // Payment information text
+    // Check the payment information text
     const paymentInfo = await driver.findElement(
       By.css('[data-test="payment-info-value"]'),
     );
     const paymentInfoText = await paymentInfo.getText();
     expect(paymentInfoText).to.not.equal("");
 
-    // Shipping information label text
+    // Check the shipping information label text
     const shippingInfoTitle = await driver.findElement(
       By.css('[data-test="shipping-info-label"]'),
     );
     const shippingInfoTitleText = await shippingInfoTitle.getText();
     expect(shippingInfoTitleText).to.equal("Shipping Information:");
 
-    // Shipping information text
+    // Check the shipping information text
     const shippingInfo = await driver.findElement(
       By.css('[data-test="shipping-info-value"]'),
     );
     const shippingInfoText = await shippingInfo.getText();
     expect(shippingInfoText).to.not.equal("");
 
-    // Price information label text
+    // Check the price information label text
     const priceInfoTitle = await driver.findElement(
       By.css('[data-test="total-info-label"]'),
     );
     const totalInfoTitleText = await priceInfoTitle.getText();
     expect(totalInfoTitleText).to.equal("Price Total");
 
-    // Item total text
+    // Check the item total text
     const itemTotalInfo = await driver.findElement(
       By.css('[data-test="subtotal-label"]'),
     );
     const itemTotalText = await itemTotalInfo.getText();
     expect(itemTotalText).to.match(/^.+:\s\$\d+(\.\d{2})?$/);
 
-    // Tax text
+    // Check the tax text
     const taxInfo = await driver.findElement(By.css('[data-test="tax-label"]'));
     const taxText = await taxInfo.getText();
     expect(taxText).to.match(/^.+:\s\$\d+(\.\d{2})?$/);
 
-    // Total tax text
+    // Check the total tax text
     const totalTaxInfo = await driver.findElement(
       By.css('[data-test="total-label"]'),
     );
@@ -388,14 +381,14 @@ describe("saucedemo Login Page", function () {
     const finishBtn = await driver.findElement(By.css('[data-test="finish"]'));
     await finishBtn.click();
 
-    // Thanks text
+    // Check the "Thanks" text
     const thankYouEl = await driver.findElement(
       By.css('[data-test="complete-header"]'),
     );
     const thankYouText = await thankYouEl.getText();
     expect(thankYouText).to.equal("Thank you for your order!");
 
-    // Complete text
+    // Check the "Complete" text
     const completeEl = await driver.findElement(
       By.css('[data-test="complete-text"]'),
     );
@@ -404,7 +397,7 @@ describe("saucedemo Login Page", function () {
       "Your order has been dispatched, and will arrive just as fast as the pony can get there!",
     );
 
-    // Back home button
+    // Check the "Back home" button
     const backHomeBtn = await driver.findElement(
       By.css("button.btn.btn_primary.btn_small"),
     );
@@ -413,7 +406,7 @@ describe("saucedemo Login Page", function () {
 
   // Test #25
   it("Test#25 - verification of Back home button on the complete Page", async () => {
-    // Back home button
+    // Get the "Back home" button
     const backHomeBtn = await driver.findElement(
       By.css("button.btn.btn_primary.btn_small"),
     );

@@ -19,26 +19,17 @@ jobs:
 
       # 3. Устанавливаем npm-зависимости
       - name: Install dependencies
-        working-directory: ./saucedemo.com
         run: npm install
 
       # 4. Устанавливаем системные пакеты для headless Chrome
-      - name: Install dependencies for headless Chrome
+      - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget unzip xvfb libxi6 libnss3 libxss1 fonts-liberation
+          sudo apt-get install -y wget unzip xvfb libxi6 libnss3 libxss1 fonts-liberation google-chrome-stable
 
-      # 5. Устанавливаем Google Chrome
-      - name: Install Google Chrome
+      # 5. Запуск Selenium тестов в headless Chrome
+      - name: Run Selenium tests
         run: |
-          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-          sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
-
-      # 6. Запуск Selenium тестов
-      - name: Run tests
-        working-directory: ./saucedemo.com
-        run: |
+          Xvfb :99 -screen 0 1280x1024x24 &
           export DISPLAY=:99
           npx mocha ./test/**/*.js
