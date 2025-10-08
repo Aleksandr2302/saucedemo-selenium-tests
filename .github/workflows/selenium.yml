@@ -7,23 +7,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Забираем код
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # 2. Настраиваем Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
+      # 3. Устанавливаем npm-зависимости
       - name: Install dependencies
-        working-directory: saucedemo.com
+        working-directory: ./saucedemo.com
         run: npm install
 
+      # 4. Устанавливаем системные пакеты для headless Chrome
       - name: Install dependencies for headless Chrome
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget unzip xvfb libxi6 libnss3 libxss1 libasound2
+          sudo apt-get install -y wget unzip xvfb libxi6 libnss3 libxss1 fonts-liberation
 
+      # 5. Устанавливаем Google Chrome
       - name: Install Google Chrome
         run: |
           wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
@@ -31,8 +36,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
 
+      # 6. Запуск Selenium тестов
       - name: Run tests
+        working-directory: ./saucedemo.com
         run: |
-          # запуск в headless режиме
           export DISPLAY=:99
           npm test
