@@ -41,4 +41,4 @@ jobs:
         working-directory: ./saucedemo.com
         run: |
           export DISPLAY=:99
-          npm test
+          npx mocha ./test/**/*.js
