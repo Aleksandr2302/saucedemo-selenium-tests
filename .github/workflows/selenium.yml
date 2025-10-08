@@ -16,7 +16,7 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        working-directory: ./№2\ learning/saucedemo.com
+        working-directory: newProject/learning/saucedemo.com
         run: npm install
 
       - name: Install dependencies for headless Chrome
