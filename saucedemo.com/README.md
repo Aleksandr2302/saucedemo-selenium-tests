@@ -3,7 +3,7 @@
 **Description:**  
 This is a set of automated tests for the [Saucedemo](https://www.saucedemo.com/) training website.  
 Tests are written in **JavaScript** using **Selenium WebDriver**, **Mocha**, and **Chai**. 
-+CI/CD 
++CI/CD.
 
 **Test Coverage:**  
 - Login functionality: valid and invalid credentials  
