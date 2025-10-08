@@ -3,7 +3,10 @@
 **Description:**  
 This is a set of automated tests for the [Saucedemo](https://www.saucedemo.com/) training website.  
 Tests are written in **JavaScript** using **Selenium WebDriver**, **Mocha**, and **Chai**. 
-+CI/CD.
+
+**CI/CD:**  
+- GitHub Actions is configured to automatically run all tests on **push** or **pull request**.
+- Tests run in **headless Chrome** using **Xvfb** on an Ubuntu runner.
 
 **Test Coverage:**  
 - Login functionality: valid and invalid credentials  
@@ -14,7 +17,6 @@ Tests are written in **JavaScript** using **Selenium WebDriver**, **Mocha**, and
 ---
 
 ## Project Structure
-/saucedemo-tests
 /test
 loginPage.test.js
 productPage.test.js
