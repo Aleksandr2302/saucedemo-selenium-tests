@@ -19,8 +19,7 @@ jobs:
 
       # 3. Install npm dependencies
       - name: Install npm dependencies
-        working-directory: ./saucedemo.com
-        run: npm ci   # ci ensures exact versions including devDependencies
+        run: npm ci   # installs dependencies and devDependencies including mocha
 
       # 4. Install system dependencies for headless Chrome
       - name: Install system dependencies
@@ -38,11 +37,10 @@ jobs:
 
       # 6. Run Selenium tests in headless Chrome
       - name: Run Selenium tests
-        working-directory: ./saucedemo.com
         run: |
           # Start virtual display
           Xvfb :99 -screen 0 1280x1024x24 &
           export DISPLAY=:99
 
-          # Run Mocha tests via npx
-          npx mocha ./test/**/*.js
+          # Run tests using npx to pick up local Mocha
+          npx mocha test/**/*.js
