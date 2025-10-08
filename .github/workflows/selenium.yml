@@ -1,44 +1,37 @@
 name: Run Selenium Tests
 
-on:
-  push:
-  pull_request:
+on: [push, pull_request]
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Скачиваем код
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Устанавливаем Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      # 3. Устанавливаем Chrome
-      - name: Install Google Chrome
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget unzip xvfb libxi6 libgconf-2-4 google-chrome-stable
-
-      # 4. Устанавливаем ChromeDriver
-      - name: Install ChromeDriver
-        run: |
-          CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d. -f1)
-          LATEST_DRIVER=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
-          wget -N https://chromedriver.storage.googleapis.com/$LATEST_DRIVER/chromedriver_linux64.zip
-          unzip chromedriver_linux64.zip
-          sudo mv chromedriver /usr/local/bin/
-          sudo chmod +x /usr/local/bin/chromedriver
-
-      # 5. Устанавливаем зависимости проекта
       - name: Install dependencies
         run: npm install
 
-      # 6. Запускаем тесты
+      - name: Install dependencies for headless Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip xvfb libxi6 libnss3 libxss1 libasound2
+
+      - name: Install Google Chrome
+        run: |
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
       - name: Run tests
-        run: npm test
+        run: |
+          # запуск в headless режиме
+          export DISPLAY=:99
+          npm test
