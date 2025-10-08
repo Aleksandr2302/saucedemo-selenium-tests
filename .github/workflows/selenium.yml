@@ -4,11 +4,10 @@ on: [push, pull_request]
 
 jobs:
   test:
-    # Use Ubuntu image with pre-installed Chrome and Node.js
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the repository
+      # 1. Checkout code
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -19,21 +18,29 @@ jobs:
           node-version: 18
 
       # 3. Install npm dependencies
-      - name: Install dependencies
-        run: npm ci
+      - name: Install npm dependencies
+        run: npm ci   # installs dependencies and devDependencies including mocha
 
-      # 4. Run Selenium tests in headless Chrome via Xvfb
+      # 4. Install system dependencies for headless Chrome
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip xvfb libxi6 libnss3 libxss1 fonts-liberation
+
+      # 5. Install Google Chrome
+      - name: Install Google Chrome
+        run: |
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
+      # 6. Run Selenium tests in headless Chrome
       - name: Run Selenium tests
         run: |
-          # Update package lists and install required packages for headless Chrome
-          sudo apt-get update
-          sudo apt-get install -y xvfb libxi6 libnss3 libxss1 fonts-liberation
-          
           # Start virtual display
           Xvfb :99 -screen 0 1280x1024x24 &
-          
-          # Set DISPLAY environment variable
           export DISPLAY=:99
-          
-          # Run tests with Mocha
-          npx mocha ./test/**/*.js
+
+          # Run tests using npx to pick up local Mocha
+          npx mocha test/**/*.js
